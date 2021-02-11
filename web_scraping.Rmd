@@ -1,0 +1,100 @@
+---
+title: "web_scraping"
+author: "Salerno"
+date: "09/02/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, collapse = TRUE)
+library(rvest)
+library(dplyr)
+
+```
+
+## 1) Install Extension SelectorGadget
+
+## 2) TripAdvisor
+
+```{r}
+
+link <- "https://www.tripadvisor.com.br/Restaurants-g303576-Florianopolis_State_of_Santa_Catarina.html"
+
+```
+
+## 3) Fetching the data
+
+```{r}
+
+page <- read_html(link)
+print(page)
+
+```
+## 4) 
+
+```{r}
+
+nome_restaurante <- page %>%
+                    html_nodes(" ._15_ydu6b") %>%
+                    html_text()
+
+print(nome_restaurante)
+```
+ 
+```{r}
+
+tipo_restaurante <- page %>%
+                    html_nodes("._3d9EnJpt .EHA742uW:nth-child(1) ._1p0FLy4t") %>%
+                    html_text()
+
+print(tipo_restaurante)
+
+```
+ 
+```{r}
+
+qnt_reviews <- page %>%
+                html_nodes(".w726Ki5B") %>%
+                html_text()
+
+print(qnt_reviews)
+
+```
+```{r}
+
+restaurante_link <- page %>%
+                html_nodes("._15_ydu6b") %>%
+                html_attr("href") %>%
+                paste("https://www.tripadvisor.com.br", ., sep = "")
+
+print(restaurante_link)
+
+```
+```{r}
+
+get_reviews <- function(restaurante_link){
+    restaurante_page <- read_html(restaurante_link)
+    review <- restaurante_page %>%
+      html_nodes(".partial_entry") %>%
+      html_text() %>%
+      paste(collapse = "|")
+  
+}
+
+```
+
+```{r}
+
+reviews <- sapply(restaurante_link, FUN = get_reviews, USE.NAMES = FALSE)
+
+```
+
+```{r}
+
+restaurantes <- data.frame(nome_restaurante, tipo_restaurante, qnt_reviews, restaurante_link, reviews)
+
+print(restaurantes)
+
+```
+
+
