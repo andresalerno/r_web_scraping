@@ -1,0 +1,131 @@
+---
+title: "Web Scraping Multiple Pages"
+author: "Salerno"
+date: "09/02/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, collapse = TRUE)
+library(rvest)
+library(dplyr)
+
+```
+
+## 1) Install Extension SelectorGadget
+
+## 2) TripAdvisor
+
+```{r}
+
+proximo_link <- "https://www.tripadvisor.com.br/Restaurants-g303576-Florianopolis_State_of_Santa_Catarina.html"
+
+```
+
+```{r}
+
+get_reviews <- function(restaurante_link){
+    restaurante_page <- read_html(restaurante_link)
+    review <- restaurante_page %>%
+      html_nodes(".partial_entry") %>%
+      html_text() %>%
+      paste(collapse = "|")
+  
+}
+
+```
+
+```{r}
+
+restaurantes <- data.frame()
+
+```
+
+```{r}
+
+for (pagina in 1:127) {
+
+  page <- read_html(proximo_link)
+
+
+  nome_restaurante <- page %>%
+                    html_nodes(" ._15_ydu6b") %>%
+                    html_text()
+
+  tipo_restaurante <- page %>%
+                    html_nodes("._3d9EnJpt .EHA742uW:nth-child(1) ._1p0FLy4t") %>%
+                    html_text()
+
+  qnt_reviews <- page %>%
+                html_nodes(".w726Ki5B") %>%
+                html_text()
+
+  restaurante_link <- page %>%
+                html_nodes("._15_ydu6b") %>%
+                html_attr("href") %>%
+                paste("https://www.tripadvisor.com.br", ., sep = "")
+
+
+  reviews <- sapply(restaurante_link, FUN = get_reviews, USE.NAMES = FALSE)
+  
+  
+
+  restaurantes <- rbind(restaurantes, data.frame(nome_restaurante, tipo_restaurante, qnt_reviews, restaurante_link, reviews))
+  
+  proximo_link <- page %>%
+                html_nodes(".next") %>%
+                html_attr("href") %>%
+                paste("https://www.tripadvisor.com.br", ., sep = "")
+  
+  print(paste("Página", pagina))
+
+}
+
+```
+
+
+## 3) Fetching the data
+
+```{r}
+
+
+
+```
+## 4) 
+
+```{r}
+
+
+```
+ 
+```{r}
+
+
+
+```
+ 
+```{r}
+
+
+
+```
+```{r}
+
+
+
+```
+
+
+```{r}
+
+
+
+```
+
+```{r}
+
+
+
+```
+
+
